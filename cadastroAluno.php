@@ -1,13 +1,8 @@
 <?php
-    $nomeAluno = $_POST['nomeAluno'];
+   include_once('config/conexão.php');
+   $nomeAluno = $_POST['nomeAluno'];
     $raAluno = $_POST['raAluno'];
     $cursoId = $_POST['curso'];
-
-    $host = 'mysql:host=localhost;dbname=escola;port=3307';
-    $user = 'root';
-    $pass = '';
-
-    $db = new PDO($host, $user, $pass);
 
     $query = $db->prepare('INSERT INTO alunos (nome, ra, curso_id) 
     values (:nome,:ra,:cursos_id)');
