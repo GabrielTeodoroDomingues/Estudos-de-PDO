@@ -10,17 +10,29 @@
 
     if(isset($_GET['id'])){
 
-    $id = $_GET['id'];
+        $id = $_GET['id'];
+    }elseif(isset($_POST['id'])) {
+        $id = $_POST['id'];
     }else {
         echo 'Você deve passar um id';
         exit;
     }
-    
 
     $query = $db->prepare('SELECT * FROM alunos WHERE id = ?');
 
-    $aluno = $query->execute([$id]);
-    $aluno = $aluno->fetch(PDO::FETCH_ASSOC);
+    $query->execute([$id]);
+    $aluno = $query->fetch(PDO::FETCH_ASSOC);
+var_dump($_POST);
+    if($_POST != []){
+        $nomeAluno = $_POST['nomeAluno'];
+        $raAluno = $_POST['raAluno'];
+        $cursoId = $_POST['curso'];
+        $id = $_POST['id'];
+
+        $query = $db->prepare('UPDATE alunos SET nome = :nome, ra = :ra, curso_id = :curso_id WHERE id = :id');
+        $resultado = $query->execute(['id' => $id, 'curso_id' => $cursoId, 'ra' => $raAluno, 'nome' => $nomeAluno]);
+        var_dump($id);
+    };
 
 ?>
 
@@ -34,18 +46,29 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="cadastroAluno.php" method="post">
+    <form action="updateAluno.php" method="post">
+        <input type="text" name = 'id' readonly hidden value='<?php echo $id ?>'>
         <h2>Nome aluno</h2>
-        <input type="text" name = 'nomeAluno'>
+        <input type="text" name = 'nomeAluno' value = '<?php echo $aluno['nome'];?>'>
         <h2>Ra do aluno</h2>
-        <input type="text" name = 'raAluno'>
+        <input type="text" name = 'raAluno' value = '<?php echo $aluno['ra'];?>' readonly>
         <h2>Cuesos disponíveis</h2>
         <select name="curso" id="">
             <?php foreach($cursos as $curso): ?> 
-                <option value="<?php echo $curso['id']; ?>"><?php echo $curso['nome']; ?></option>
+               <?php if($curso['id'] == $aluno['curso_id']): ?>
+                <option selected value="<?php $curso['id']; ?>">
+                    <?php echo $curso['nome']; ?>
+                </option>
+                <?php else: ?>
+                <option value="<?php $curso['id'];?>">
+                    <?php echo $curso['nome']; ?>
+                </option>
+                <?php endif; ?>
+    
+    
             <?php endforeach; ?>
         </select>
-        <button type="submit">Cadastrar</button>
+        <button type="submit">Salvar alterações</button>
     </form>
 </body>
 </html>
